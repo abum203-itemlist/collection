@@ -1,0 +1,1283 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-width=1.0">
+    <title>영상 속 추천템 모음집</title>
+    <!-- SEO 최적화 메타 태그 -->
+    <meta name="description" content="유튜브 쇼츠 영상에서 소개된 신박하고 유용한 추천 아이템들을 한눈에 확인하고 구매할 수 있는 모음집입니다.">
+    <meta property="og:title" content="영상 속 추천템 모음집">
+    <meta property="og:description" content="영상 속 그 제품! 바로 확인해보세요.">
+    <meta property="og:type" content="website">
+    
+    <!-- 구글 폰트 적용 (Pretendard) -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    
+    <style>
+        /* ... existing styles ... */
+        :root {
+            --primary-color: #ff3f3f;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(180deg, rgba(255, 63, 63, 0.1) 0%, var(--bg-color) 100%);
+        }
+
+        .profile-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: #333;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 3px solid var(--card-bg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-size: 1.5rem; margin-bottom: 5px; }
+        .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; }
+
+        /* --- Search Bar --- */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            padding: 0 15px;
+        }
+        
+        .search-box {
+            display: flex;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 5px 15px;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .search-box input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 10px;
+            outline: none;
+        }
+        
+        .search-box input::placeholder {
+            color: #666;
+        }
+        
+        .search-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .search-btn:hover {
+            background-color: #e63939;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 15px 40px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        /* --- Card Styles --- */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: 0.2s;
+            position: relative;
+        }
+        
+        /* 검색으로 찾은 항목 강조 효과 */
+        .card.highlight {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(255, 63, 63, 0.5);
+            transform: scale(1.02);
+            transition: 0.5s all;
+        }
+
+        .item-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            background-color: #2a2a2a;
+        }
+
+        .card-img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 5px;
+        }
+
+        .btn-buy {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 10px 0;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(255, 63, 63, 0.4);
+        }
+        
+        .btn-buy:hover {
+            background-color: #e63939;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .disclaimer {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 15px;
+            word-break: keep-all;
+        }
+        
+        /* 알림 메시지 (토스트) */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        @media (max-width: 350px) {
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- [중요] 쿠팡 파트너스 대가성 문구: 반려 방지를 위해 페이지 최상단에 고대비로 배치 -->
+    <div style="background-color: #ffb300; color: #000; padding: 12px 20px; text-align: center; font-size: 0.9rem; font-weight: bold; border-bottom: 2px solid #ffa000; line-height: 1.5; word-break: keep-all;">
+        이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+    </div>
+
+    <header>
+        <div class="profile-img">📺</div>
+        <h1>영상 속 추천템 모음</h1>
+        <p class="subtitle">쇼츠 영상에서 본 그 제품! 바로 확인하세요 👀</p>
+    </header>
+    
+    <!-- 검색 영역 -->
+    <div class="search-container">
+        <form class="search-box" onsubmit="searchItem(event)">
+            <input type="number" id="searchInput" placeholder="영상 속 번호(No. 숫자) 입력" min="1">
+            <button type="submit" class="search-btn">검색</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="productGrid">
+            <!-- 파이썬 코드가 여기에 상품 목록을 주입합니다 -->
+            
+            <a href="https://link.coupang.com/a/eAfpFf" target="_blank" rel="noopener noreferrer" class="card" id="item-70">
+                <div class="item-number">No. 70</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_70.jpg" alt="일체형화장대 메이크업 테이블 화장대 화이트 공간" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">일체형화장대 메이크업 테이블 화장대 화이트 공간</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eAezUM" target="_blank" rel="noopener noreferrer" class="card" id="item-69">
+                <div class="item-number">No. 69</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_69.jpg" alt="이동식 화장대 테이블 원룸 슬림 선반 침실 캐비넷" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">이동식 화장대 테이블 원룸 슬림 선반 침실 캐비넷</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ex6yEk" target="_blank" rel="noopener noreferrer" class="card" id="item-68">
+                <div class="item-number">No. 68</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_68.jpg" alt="1+1 일본 밥알이 안붙는 위생적인 밥주걱" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">1+1 일본 밥알이 안붙는 위생적인 밥주걱</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ex5us0" target="_blank" rel="noopener noreferrer" class="card" id="item-67">
+                <div class="item-number">No. 67</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_67.jpg" alt="물총 여름 스트레스해소 물놀이 성인 어른 장난감 어린이 쥐어짜" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">물총 여름 스트레스해소 물놀이 성인 어른 장난감 어린이 쥐어짜</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ex4zfB" target="_blank" rel="noopener noreferrer" class="card" id="item-66">
+                <div class="item-number">No. 66</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_66.jpg" alt="발 씻는 풋브러쉬 샴푸 매트" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">발 씻는 풋브러쉬 샴푸 매트</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/exqYpf" target="_blank" rel="noopener noreferrer" class="card" id="item-65">
+                <div class="item-number">No. 65</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_65.jpg" alt="에어프라이어 멀티쿠커 오븐형 분리형 소형 기숙사 여행용 캠핑용 사무실 전기냄비포트 라면포트" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">에어프라이어 멀티쿠커 오븐형 분리형 소형 기숙사 여행용 캠핑용 사무실 전기냄비포트 라면포트</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ewhkLf" target="_blank" rel="noopener noreferrer" class="card" id="item-64">
+                <div class="item-number">No. 64</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_64.jpg" alt="크림아일랜드 길이조절식탁" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">크림아일랜드 길이조절식탁</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/evvVRN" target="_blank" rel="noopener noreferrer" class="card" id="item-63">
+                <div class="item-number">No. 63</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_63.jpg" alt="무선 창 와이퍼 USB 충전" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">무선 창 와이퍼 USB 충전</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/evuDU1" target="_blank" rel="noopener noreferrer" class="card" id="item-62">
+                <div class="item-number">No. 62</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_62.jpg" alt="틴다 셔츠 카라 주름 고정 스티커 깃 보강재 구김방지 스타일링 패치" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">틴다 셔츠 카라 주름 고정 스티커 깃 보강재 구김방지 스타일링 패치</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/evum1f" target="_blank" rel="noopener noreferrer" class="card" id="item-61">
+                <div class="item-number">No. 61</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_61.jpg" alt="원목 협탁 틈새 사이드 우드 안방 원목협탁 침실 인테리움" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">원목 협탁 틈새 사이드 우드 안방 원목협탁 침실 인테리움</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/evsDTr" target="_blank" rel="noopener noreferrer" class="card" id="item-60">
+                <div class="item-number">No. 60</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_60.jpg" alt="벽걸이 칫솔살균기 UV C LED 휴대용 살균기 가정용 충전식 건조기 스마트 무선 센서감지 치약칫솔걸이 2인용" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">벽걸이 칫솔살균기 UV C LED 휴대용 살균기 가정용 충전식 건조기 스마트 무선 센서감지 치약칫솔걸이 2인용</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/evi5gx" target="_blank" rel="noopener noreferrer" class="card" id="item-59">
+                <div class="item-number">No. 59</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_59.jpg" alt="1+1/2+2 운동화 크리너 초강력 신발 클리너 흰색 신발 구두 세척 크리너 세정제 얼룩 제거 다기능 크리너" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">1+1/2+2 운동화 크리너 초강력 신발 클리너 흰색 신발 구두 세척 크리너 세정제 얼룩 제거 다기능 크리너</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/euPaR6" target="_blank" rel="noopener noreferrer" class="card" id="item-58">
+                <div class="item-number">No. 58</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_58.jpg" alt="OralGos 3D 프리미엄 3면 칫솔" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">OralGos 3D 프리미엄 3면 칫솔</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eub3Vj" target="_blank" rel="noopener noreferrer" class="card" id="item-57">
+                <div class="item-number">No. 57</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_57.jpg" alt="신발수납 조립식신발장 슬라이딩선반" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">신발수납 조립식신발장 슬라이딩선반</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/etrUGd" target="_blank" rel="noopener noreferrer" class="card" id="item-56">
+                <div class="item-number">No. 56</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_56.jpg" alt="이지 아이스 메이커 + 대용량 보관박스 + 집게" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">이지 아이스 메이커 + 대용량 보관박스 + 집게</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/etoAW0" target="_blank" rel="noopener noreferrer" class="card" id="item-55">
+                <div class="item-number">No. 55</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_55.jpg" alt="무타공 욕실선반 욕실 선반 빨래건조대" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">무타공 욕실선반 욕실 선반 빨래건조대</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/esFj5p" target="_blank" rel="noopener noreferrer" class="card" id="item-54">
+                <div class="item-number">No. 54</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_54.jpg" alt="대용량 트롤리 뉴 스윙 3단 빨래바구니" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">대용량 트롤리 뉴 스윙 3단 빨래바구니</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/er5Zpc" target="_blank" rel="noopener noreferrer" class="card" id="item-53">
+                <div class="item-number">No. 53</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_53.jpg" alt="데일리픽 쉽게 끼우는 밀폐 거꾸로 캡" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">데일리픽 쉽게 끼우는 밀폐 거꾸로 캡</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eqzsSq" target="_blank" rel="noopener noreferrer" class="card" id="item-52">
+                <div class="item-number">No. 52</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_52.jpg" alt="스마트 유리 필름 전기 변색 창 자체 접착 PDLC 맞춤형 시공 간편" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">스마트 유리 필름 전기 변색 창 자체 접착 PDLC 맞춤형 시공 간편</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/epWgPR" target="_blank" rel="noopener noreferrer" class="card" id="item-51">
+                <div class="item-number">No. 51</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_51.jpg" alt="매립형 천장 전동 빨래 건조대 천정 자동 빨래걸이 천장형 베란다 천정형" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">매립형 천장 전동 빨래 건조대 천정 자동 빨래걸이 천장형 베란다 천정형</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/epVXbO" target="_blank" rel="noopener noreferrer" class="card" id="item-50">
+                <div class="item-number">No. 50</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_50.jpg" alt="욕실 수납 선반 무타공 세면대" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">욕실 수납 선반 무타공 세면대</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/epVHe3" target="_blank" rel="noopener noreferrer" class="card" id="item-49">
+                <div class="item-number">No. 49</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_49.jpg" alt="주방 싱크대 수납 흡착식 튐방지 물막이" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">주방 싱크대 수납 흡착식 튐방지 물막이</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/epkCT2" target="_blank" rel="noopener noreferrer" class="card" id="item-48">
+                <div class="item-number">No. 48</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_48.jpg" alt="아스토니쉬 바닥 클리너 시트러스" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">아스토니쉬 바닥 클리너 시트러스</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/epi04d" target="_blank" rel="noopener noreferrer" class="card" id="item-47">
+                <div class="item-number">No. 47</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_47.jpg" alt="네일연장 폴리젤 아크릴젤 30ml세트" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">네일연장 폴리젤 아크릴젤 30ml세트</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/epieWm" target="_blank" rel="noopener noreferrer" class="card" id="item-46">
+                <div class="item-number">No. 46</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_46.jpg" alt="감성 캠핑랜턴 IP65방수 접이식 무드등 차박 비상조명" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">감성 캠핑랜턴 IP65방수 접이식 무드등 차박 비상조명</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ephpyw" target="_blank" rel="noopener noreferrer" class="card" id="item-45">
+                <div class="item-number">No. 45</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_45.jpg" alt="차박 캠핑용 에어매트" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">차박 캠핑용 에어매트</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eorfAm" target="_blank" rel="noopener noreferrer" class="card" id="item-44">
+                <div class="item-number">No. 44</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_44.jpg" alt="충전식 소형 믹서기 쉐이커" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">충전식 소형 믹서기 쉐이커</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/enZOXI" target="_blank" rel="noopener noreferrer" class="card" id="item-43">
+                <div class="item-number">No. 43</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_43.jpg" alt="가정용 좁은 주방식탁 4인용 거실 테이블 접이식 의자 세트" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">가정용 좁은 주방식탁 4인용 거실 테이블 접이식 의자 세트</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/enXa86" target="_blank" rel="noopener noreferrer" class="card" id="item-42">
+                <div class="item-number">No. 42</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_42.jpg" alt="칼집나지않는 항균 위생 스텐도마" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">칼집나지않는 항균 위생 스텐도마</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/el4WvU" target="_blank" rel="noopener noreferrer" class="card" id="item-41">
+                <div class="item-number">No. 41</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_41.jpg" alt="하스몰 차곡차곡 공간활용 구분 의류 옷 정리함" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">하스몰 차곡차곡 공간활용 구분 의류 옷 정리함</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/el4fIM" target="_blank" rel="noopener noreferrer" class="card" id="item-40">
+                <div class="item-number">No. 40</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_40.jpg" alt="전동 핸드 드릴 판금절단기 철판 함석 컷팅기 충전드릴 장착 결합형 금속 가위" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">전동 핸드 드릴 판금절단기 철판 함석 컷팅기 충전드릴 장착 결합형 금속 가위</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/el34iL" target="_blank" rel="noopener noreferrer" class="card" id="item-39">
+                <div class="item-number">No. 39</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_39.jpg" alt="아이베란다 90도 스프링 문 경첩 도어 클로저 65x100mm" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">아이베란다 90도 스프링 문 경첩 도어 클로저 65x100mm</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/elZuE6" target="_blank" rel="noopener noreferrer" class="card" id="item-38">
+                <div class="item-number">No. 38</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_38.jpg" alt="대나무 서랍형 트레이 도마 플레이팅" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">대나무 서랍형 트레이 도마 플레이팅</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ekBEJS" target="_blank" rel="noopener noreferrer" class="card" id="item-37">
+                <div class="item-number">No. 37</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_37.jpg" alt="스마트 거실테이블냉장고 가정용 사무실 술냉장고 냉동 홈바 음료냉장고 거실장" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">스마트 거실테이블냉장고 가정용 사무실 술냉장고 냉동 홈바 음료냉장고 거실장</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ekzTG8" target="_blank" rel="noopener noreferrer" class="card" id="item-36">
+                <div class="item-number">No. 36</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_36.jpg" alt="리빙필로 무타공 강력 접착식 욕실 후크 6 x 6 cm, 투명, 20개" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">리빙필로 무타공 강력 접착식 욕실 후크 6 x 6 cm, 투명, 20개</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ekxgKG" target="_blank" rel="noopener noreferrer" class="card" id="item-35">
+                <div class="item-number">No. 35</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_35.jpg" alt="패딩 얼룩제거티슈 패딩 티슈 화장품 지우는 물티슈 의류 얼룩 제거제 물티슈 패딩 오염 김치 국물 커피얼룩 기름 얼룩 제거 비상 얼룩 제" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">패딩 얼룩제거티슈 패딩 티슈 화장품 지우는 물티슈 의류 얼룩 제거제 물티슈 패딩 오염 김치 국물 커피얼룩 기름 얼룩 제거 비상 얼룩 제</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ekwMPC" target="_blank" rel="noopener noreferrer" class="card" id="item-34">
+                <div class="item-number">No. 34</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_34.jpg" alt="100도 휴대용 분유포트 전기포트 온도조절 아기 분유 보온병" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">100도 휴대용 분유포트 전기포트 온도조절 아기 분유 보온병</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ejUtrG" target="_blank" rel="noopener noreferrer" class="card" id="item-33">
+                <div class="item-number">No. 33</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_33.jpg" alt="껍질먹는 다용도 과일채칼 야채 깍이 채칼" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">껍질먹는 다용도 과일채칼 야채 깍이 채칼</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ejSNMv" target="_blank" rel="noopener noreferrer" class="card" id="item-32">
+                <div class="item-number">No. 32</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_32.jpg" alt="접이식 건조대 창문안전가드 베란다 창문난간 설치형 다용도" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">접이식 건조대 창문안전가드 베란다 창문난간 설치형 다용도</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ejdAtY" target="_blank" rel="noopener noreferrer" class="card" id="item-31">
+                <div class="item-number">No. 31</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_31.jpg" alt="실리콘 조리도구 리본 받침대" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">실리콘 조리도구 리본 받침대</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ejc7pb" target="_blank" rel="noopener noreferrer" class="card" id="item-30">
+                <div class="item-number">No. 30</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_30.jpg" alt="다용도 튀김냄비 6 in 1 스테인레스 가정용 튀김기 스텐 밀폐용기 편수 냄비세트 사각 튀김냄비 튀김바스켓 집게 포함 1인용 냄비 캠핌용 냄비" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">다용도 튀김냄비 6 in 1 스테인레스 가정용 튀김기 스텐 밀폐용기 편수 냄비세트 사각 튀김냄비 튀김바스켓 집게 포함 1인용 냄비 캠핌용 냄비</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ejcJ0A" target="_blank" rel="noopener noreferrer" class="card" id="item-29">
+                <div class="item-number">No. 29</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_29.jpg" alt="핸디형 미니 밀대걸레 1+1 세트 셀프탈수 스펀지 청소기" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">핸디형 미니 밀대걸레 1+1 세트 셀프탈수 스펀지 청소기</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ehD3Rh" target="_blank" rel="noopener noreferrer" class="card" id="item-28">
+                <div class="item-number">No. 28</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_28.jpg" alt="만능 채칼 다용도 손보호 슬라이서 안전 스텐 채썰기 강판" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">만능 채칼 다용도 손보호 슬라이서 안전 스텐 채썰기 강판</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ehfDfg" target="_blank" rel="noopener noreferrer" class="card" id="item-27">
+                <div class="item-number">No. 27</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_27.jpg" alt="자이언트플라워 페이퍼플라워 전동 개폐 자동 종이조형물 포토존 파티 조명 움직이는" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">자이언트플라워 페이퍼플라워 전동 개폐 자동 종이조형물 포토존 파티 조명 움직이는</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ehdr18" target="_blank" rel="noopener noreferrer" class="card" id="item-26">
+                <div class="item-number">No. 26</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_26.jpg" alt="우드 라운드 거실 리빙 선반 테이블" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">우드 라운드 거실 리빙 선반 테이블</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/egwu6z" target="_blank" rel="noopener noreferrer" class="card" id="item-25">
+                <div class="item-number">No. 25</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_25.jpg" alt="SeekFun 서랍장 수납장 네일샵 캐비닛 정리함 화장품 보관함 수납함 24칸 미용 매니큐어 렌즈 액세서리 정리대" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">SeekFun 서랍장 수납장 네일샵 캐비닛 정리함 화장품 보관함 수납함 24칸 미용 매니큐어 렌즈 액세서리 정리대</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eggdak" target="_blank" rel="noopener noreferrer" class="card" id="item-24">
+                <div class="item-number">No. 24</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_24.jpg" alt="라멜리 붙이는 템바보드 단열 벽지" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">라멜리 붙이는 템바보드 단열 벽지</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/efJP8M" target="_blank" rel="noopener noreferrer" class="card" id="item-23">
+                <div class="item-number">No. 23</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_23.jpg" alt="무타공 중문 셀프설치 간이문 도어 셀프중문 슬라이딩" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">무타공 중문 셀프설치 간이문 도어 셀프중문 슬라이딩</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/efHgDt" target="_blank" rel="noopener noreferrer" class="card" id="item-22">
+                <div class="item-number">No. 22</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_22.jpg" alt="이루우리 미니 탁상용 회전 욕실 선풍기 캠핑 무선 써큘레이터" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">이루우리 미니 탁상용 회전 욕실 선풍기 캠핑 무선 써큘레이터</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ee1NSc" target="_blank" rel="noopener noreferrer" class="card" id="item-21">
+                <div class="item-number">No. 21</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_21.jpg" alt="[초특가] 가정용 포도 토마토 껍질 벗기는 기계 마늘 까는 기계 충전식 원터치 자동 과일 필링머신 다기능 껍질 제거기 전동 껍질 탈피기, 1개" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">[초특가] 가정용 포도 토마토 껍질 벗기는 기계 마늘 까는 기계 충전식 원터치 자동 과일 필링머신 다기능 껍질 제거기 전동 껍질 탈피기, 1개</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eeOPGM" target="_blank" rel="noopener noreferrer" class="card" id="item-20">
+                <div class="item-number">No. 20</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_20.jpg" alt="BLOWFISHFUGU 미니대걸레 다용도 탁상용 밀대 걸레미니마대걸레, 주황색, 1세트 - 손걸레 | 쿠팡" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">BLOWFISHFUGU 미니대걸레 다용도 탁상용 밀대 걸레미니마대걸레, 주황색, 1세트 - 손걸레 | 쿠팡</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eenhk2" target="_blank" rel="noopener noreferrer" class="card" id="item-19">
+                <div class="item-number">No. 19</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_19.jpg" alt="BTFO 무선 인덕션 블루투스 스피커 360° 회전 무선 블루투스 폰 센서 스탠드 RGB 주변 조명 및 HD 서라운드 사운드 디자인 휴대폰용" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">BTFO 무선 인덕션 블루투스 스피커 360° 회전 무선 블루투스 폰 센서 스탠드 RGB 주변 조명 및 HD 서라운드 사운드 디자인 휴대폰용</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eebPHH" target="_blank" rel="noopener noreferrer" class="card" id="item-18">
+                <div class="item-number">No. 18</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_18.jpg" alt="자동 디스펜서 대용량 550ml 2개 거품 액상 젤타입" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">자동 디스펜서 대용량 550ml 2개 거품 액상 젤타입</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/edIWse" target="_blank" rel="noopener noreferrer" class="card" id="item-17">
+                <div class="item-number">No. 17</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_17.jpg" alt="무선 USB 충전식 LED 터치 미니 무드등, 화이트" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">무선 USB 충전식 LED 터치 미니 무드등, 화이트</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ecXLDR" target="_blank" rel="noopener noreferrer" class="card" id="item-16">
+                <div class="item-number">No. 16</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_16.jpg" alt="가제만 맥세이프 휴대폰 목걸이 거치대 스마트폰 넥마운트 마그네틱 아이폰, 1개, 그레이, H1" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">가제만 맥세이프 휴대폰 목걸이 거치대 스마트폰 넥마운트 마그네틱 아이폰, 1개, 그레이, H1</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ecAy3O" target="_blank" rel="noopener noreferrer" class="card" id="item-15">
+                <div class="item-number">No. 15</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_15.jpg" alt="에이로크 비데 브러쉬 + 라벤더맛 리필 헤드 12p 세트 - 청소솔/스틱 | 쿠팡" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">에이로크 비데 브러쉬 + 라벤더맛 리필 헤드 12p 세트 - 청소솔/스틱 | 쿠팡</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ecxwRo" target="_blank" rel="noopener noreferrer" class="card" id="item-14">
+                <div class="item-number">No. 14</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_14.jpg" alt="보이오 후르츠팟 과일 샐러드 도시락통 밀프랩 용기 미니 토글 푸르트 컵, 망고블루, 1개 - 일반도시락 | 쿠팡" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">보이오 후르츠팟 과일 샐러드 도시락통 밀프랩 용기 미니 토글 푸르트 컵, 망고블루, 1개 - 일반도시락 | 쿠팡</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ebTVAs" target="_blank" rel="noopener noreferrer" class="card" id="item-13">
+                <div class="item-number">No. 13</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_13.jpg" alt="Ablemark 라벨 프린터 네임 스티커 라벨기 가정용 프린터기 미니 휴대용" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Ablemark 라벨 프린터 네임 스티커 라벨기 가정용 프린터기 미니 휴대용</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ebTUDF" target="_blank" rel="noopener noreferrer" class="card" id="item-12">
+                <div class="item-number">No. 12</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_12.jpg" alt="Cygoah 360도 열풍 신발 건조기 5단 타이머 48도 항온 빠른 건조 탈취, 화이트, H03" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Cygoah 360도 열풍 신발 건조기 5단 타이머 48도 항온 빠른 건조 탈취, 화이트, H03</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ea0jJf" target="_blank" rel="noopener noreferrer" class="card" id="item-11">
+                <div class="item-number">No. 11</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_11.jpg" alt="슈프렌 비행기 여행용 다기능 핸드폰 클램프 거치대 360도 회전 접이식, 블랙, 2개" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">슈프렌 비행기 여행용 다기능 핸드폰 클램프 거치대 360도 회전 접이식, 블랙, 2개</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ea0iZz" target="_blank" rel="noopener noreferrer" class="card" id="item-10">
+                <div class="item-number">No. 10</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_10.jpg" alt="Crit Gaming 초전도 은섬유 스마트폰 게이밍 터치 핑거 슬리브 골무 4p" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Crit Gaming 초전도 은섬유 스마트폰 게이밍 터치 핑거 슬리브 골무 4p</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/ea0gN4" target="_blank" rel="noopener noreferrer" class="card" id="item-9">
+                <div class="item-number">No. 9</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_9.jpg" alt="신지모루 자력강화 3장 수납 맥세이프 M 비카 가죽 카드지갑 케이스" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">신지모루 자력강화 3장 수납 맥세이프 M 비카 가죽 카드지갑 케이스</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eaw5SW" target="_blank" rel="noopener noreferrer" class="card" id="item-8">
+                <div class="item-number">No. 8</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_8.jpg" alt="다용도 자석 펜꽂이" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">다용도 자석 펜꽂이</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://www.coupang.com/vp/products/7912960111" target="_blank" rel="noopener noreferrer" class="card" id="item-6">
+                <div class="item-number">No. 6</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_6.jpg" alt="도어 싱크대 식기건조대 무타공 바닥부착식 식기건조대, 화이트 85cm, 1개 - 다용도선반 | 쿠팡" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">도어 싱크대 식기건조대 무타공 바닥부착식 식기건조대, 화이트 85cm, 1개 - 다용도선반 | 쿠팡</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/eaibfo" target="_blank" rel="noopener noreferrer" class="card" id="item-5">
+                <div class="item-number">No. 5</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_5.jpg" alt="창안애 나비주름 주름유지가공 형상 플레인 암막커튼" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">창안애 나비주름 주름유지가공 형상 플레인 암막커튼</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/d9M5bJ" target="_blank" rel="noopener noreferrer" class="card" id="item-4">
+                <div class="item-number">No. 4</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_4.jpg" alt="타포 홈 보안 WIFI 카메라 실내용 - CCTV/IP카메라 | 쿠팡" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">타포 홈 보안 WIFI 카메라 실내용 - CCTV/IP카메라 | 쿠팡</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/d5OXPP" target="_blank" rel="noopener noreferrer" class="card" id="item-3">
+                <div class="item-number">No. 3</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_3.jpg" alt="3M 전동 핸드그라인더 4CG-2" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">3M 전동 핸드그라인더 4CG-2</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://link.coupang.com/a/d5OXwN" target="_blank" rel="noopener noreferrer" class="card" id="item-2">
+                <div class="item-number">No. 2</div>
+                <div class="card-img-wrapper">
+                    <!-- 이미지가 없을 경우를 대비한 placeholder 텍스트 설정 -->
+                    <img src="images/item_2.jpg" alt="준앤코 3WAY 와이드 폭포수 싱크대 수전 KF302" class="card-img" onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3A%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3A%22100%25%22%20height%3A%22100%25%22%3E%3Crect%20fill%3A%22%232a2a2a%22%20width%3A%22100%25%22%20height%3A%22100%25%22%2F%3E%3Ctext%20fill%3A%22%23555555%22%20font-family%3A%22sans-serif%22%20font-size%3A%2214%22%20dy%3A%2210.5%22%20font-weight%3A%22bold%22%20x%3A%2250%25%22%20y%3A%2250%25%22%20text-anchor%3A%22middle%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">준앤코 3WAY 와이드 폭포수 싱크대 수전 KF302</h2>
+                    <div class="card-bottom">
+                        <span class="btn-buy">👉 실시간 최저가 확인</span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <footer>
+        <p style="color: #ffb300; font-weight: bold; margin-bottom: 10px;">"이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."</p>
+        <p>© 2026 꿀템 리뷰 채널. All rights reserved.</p>
+    </footer>
+
+    <!-- 알림 메시지 엘리먼트 -->
+    <div id="toast">해당 번호의 상품을 찾을 수 없습니다.</div>
+
+    <script>
+        function searchItem(event) {
+            event.preventDefault();
+            const input = document.getElementById('searchInput');
+            const num = input.value.trim();
+            
+            if(!num) return;
+            
+            // 모든 카드의 하이라이트 초기화
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('highlight'));
+            
+            // 입력한 번호의 아이템 찾기 (ID 속성에 바인딩되어 있음)
+            const targetId = 'item-' + num;
+            const targetCard = document.getElementById(targetId);
+            
+            if(targetCard) {
+                // 부드럽게 스크롤
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // 하이라이트 효과
+                targetCard.classList.add('highlight');
+                // 2초 뒤 Ха이라이트 제거
+                setTimeout(() => targetCard.classList.remove('highlight'), 2000);
+            } else {
+                showToast(num + "번 상품을 찾을 수 없습니다.");
+            }
+        }
+        
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+    </script>
+</body>
+</html>
